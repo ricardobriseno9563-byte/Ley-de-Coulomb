@@ -1,0 +1,894 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador Ley de Coulomb</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #0B1424;
+    color: #F1F5F9;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 8%;
+    background: #101D30;
+    border-bottom: 1px solid #263A50;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.logo {
+    font-size: 27px;
+    font-weight: bold;
+}
+
+.logo span {
+    color: #24C8DB;
+}
+
+nav {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+nav a {
+    color: #CBD5E1;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+nav a:hover {
+    color: #24C8DB;
+}
+
+.section {
+    padding: 65px 8%;
+}
+
+.section h2 {
+    font-size: 30px;
+    margin-bottom: 12px;
+}
+
+.subtitle {
+    color: #94A3B8;
+    margin-bottom: 30px;
+}
+
+.simulator {
+    background: #14243A;
+    border: 1px solid #263A50;
+    border-radius: 18px;
+    padding: 25px;
+}
+
+.simulator h3 {
+    color: #24C8DB;
+    margin-bottom: 15px;
+}
+
+.instructions {
+    background: #0B1B2D;
+    padding: 15px;
+    border-radius: 10px;
+    color: #CBD5E1;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.canvas-container {
+    width: 100%;
+    background: #071321;
+    border: 2px solid #24C8DB;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#campo {
+    width: 100%;
+    display: block;
+    touch-action: none;
+    cursor: crosshair;
+}
+
+.charge {
+    cursor: grab;
+    touch-action: none;
+}
+
+.charge:active {
+    cursor: grabbing;
+}
+
+.controls {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.control-card {
+    background: #0B1B2D;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #263A50;
+}
+
+.control-card label {
+    display: block;
+    margin: 12px 0;
+    color: #CBD5E1;
+}
+
+.control-card input[type="range"] {
+    width: 100%;
+    accent-color: #24C8DB;
+    cursor: pointer;
+}
+
+.control-card select {
+    width: 100%;
+    padding: 10px;
+    background: #14243A;
+    color: white;
+    border: 1px solid #24C8DB;
+    border-radius: 7px;
+}
+
+.values {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.value-box {
+    background: #0B1B2D;
+    padding: 18px 8px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.value-box span {
+    color: #94A3B8;
+    font-size: 13px;
+}
+
+.value-box strong {
+    display: block;
+    color: #24C8DB;
+    font-size: 19px;
+    margin-top: 8px;
+}
+
+.result {
+    margin-top: 20px;
+    padding: 22px;
+    background: #0B1B2D;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.result h2 {
+    color: #24C8DB;
+    font-size: 28px;
+    margin: 12px 0;
+}
+
+.result p {
+    color: #CBD5E1;
+}
+
+.btn {
+    background: #24C8DB;
+    color: #071522;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 18px;
+}
+
+.btn:hover {
+    background: #64E5EF;
+}
+
+.reset {
+    display: block;
+    margin: 20px auto 0;
+}
+
+.legend {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+    color: #CBD5E1;
+    font-size: 14px;
+}
+
+.dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.positive {
+    background: #FF4D4D;
+}
+
+.negative {
+    background: #287DFF;
+}
+
+.field {
+    background: #24C8DB;
+}
+
+.timeline {
+    margin-top: 55px;
+    background: #14243A;
+    padding: 25px;
+    border-radius: 15px;
+    border: 1px solid #263A50;
+}
+
+.timeline h2 {
+    text-align: center;
+    color: #24C8DB;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    min-width: 550px;
+}
+
+th {
+    background: #102F50;
+    color: #24C8DB;
+    padding: 15px;
+    text-align: left;
+}
+
+td {
+    padding: 15px;
+    border: 1px solid #3B526D;
+    color: #CBD5E1;
+}
+
+tr:nth-child(even) {
+    background: #0B1B2D;
+}
+
+.table-scroll {
+    overflow-x: auto;
+}
+
+footer {
+    background: #101D30;
+    text-align: center;
+    padding: 30px;
+    color: #94A3B8;
+    line-height: 2;
+}
+
+@media(max-width:800px) {
+    header {
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    nav {
+        justify-content: center;
+    }
+
+    .controls {
+        grid-template-columns: 1fr;
+    }
+
+    .values {
+        grid-template-columns: 1fr;
+    }
+
+    .section {
+        padding: 40px 5%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">Ley<span>Coulomb</span></div>
+
+    <nav>
+        <a href="index.html">Inicio</a>
+        <a href="aprende.html">Aprende</a>
+        <a href="calculadora.html">Calculadora</a>
+        <a href="simulador.html">Simulador</a>
+        <a href="portada.html">Portada</a>
+    </nav>
+</header>
+
+<section class="section">
+
+    <h2>Simulador de la Ley de Coulomb</h2>
+
+    <p class="subtitle">
+        Experimenta con las cargas eléctricas y observa
+        cómo interactúan entre sí.
+    </p>
+
+    <div class="simulator">
+
+        <h3>Laboratorio de cargas eléctricas</h3>
+
+        <div class="instructions">
+            <strong>Instrucciones:</strong>
+            <br>
+            1. Arrastra las cargas con el mouse para cambiar su posición.
+            <br>
+            2. Modifica el signo de cada carga.
+            <br>
+            3. Cambia la magnitud de las cargas utilizando los controles.
+            <br>
+            4. Observa cómo cambian las líneas del campo eléctrico.
+        </div>
+
+        <div class="canvas-container">
+
+            <svg id="campo"
+                 viewBox="0 0 900 480"
+                 role="img"
+                 aria-label="Simulación interactiva de dos cargas eléctricas">
+
+                <defs>
+                    <marker id="arrow"
+                        markerWidth="8"
+                        markerHeight="8"
+                        refX="6"
+                        refY="3"
+                        orient="auto">
+                        <path d="M0 0 L6 3 L0 6"
+                            fill="#24C8DB"/>
+                    </marker>
+
+                    <pattern id="grid"
+                        width="40" height="40"
+                        patternUnits="userSpaceOnUse">
+                        <path d="M40 0 H0 V40"
+                            fill="none"
+                            stroke="#18304A"
+                            stroke-width="1"/>
+                    </pattern>
+                </defs>
+
+                <rect width="900" height="480"
+                    fill="url(#grid)"/>
+
+                <g id="lines"></g>
+
+                <g id="charge1" class="charge">
+                    <circle id="circle1"
+                        cx="260" cy="230" r="32"
+                        fill="#FF4D4D"
+                        stroke="white" stroke-width="2"/>
+                    <text id="text1"
+                        x="260" y="241"
+                        text-anchor="middle"
+                        fill="white"
+                        font-size="38"
+                        font-weight="bold"
+                        pointer-events="none">+</text>
+                    <text id="label1"
+                        x="260" y="285"
+                        text-anchor="middle"
+                        fill="white"
+                        font-size="17"
+                        pointer-events="none">Carga 1</text>
+                </g>
+
+                <g id="charge2" class="charge">
+                    <circle id="circle2"
+                        cx="640" cy="230" r="32"
+                        fill="#287DFF"
+                        stroke="white" stroke-width="2"/>
+                    <text id="text2"
+                        x="640" y="241"
+                        text-anchor="middle"
+                        fill="white"
+                        font-size="38"
+                        font-weight="bold"
+                        pointer-events="none">−</text>
+                    <text id="label2"
+                        x="640" y="285"
+                        text-anchor="middle"
+                        fill="white"
+                        font-size="17"
+                        pointer-events="none">Carga 2</text>
+                </g>
+
+                <text x="450" y="35"
+                    text-anchor="middle"
+                    fill="#94A3B8"
+                    font-size="17">
+                    ARRASTRA LAS CARGAS PARA EXPERIMENTAR
+                </text>
+
+            </svg>
+
+        </div>
+
+        <div class="legend">
+            <span><i class="dot positive"></i>Carga positiva</span>
+            <span><i class="dot negative"></i>Carga negativa</span>
+            <span><i class="dot field"></i>Campo eléctrico</span>
+        </div>
+
+        <div class="controls">
+
+            <div class="control-card">
+                <h3>Primera carga</h3>
+
+                <label>Signo de la carga:</label>
+
+                <select id="sign1">
+                    <option value="1">Positiva (+)</option>
+                    <option value="-1">Negativa (−)</option>
+                </select>
+
+                <label>
+                    Magnitud:
+                    <strong id="q1value">2 μC</strong>
+                </label>
+
+                <input type="range"
+                    id="q1"
+                    min="1" max="10" value="2">
+            </div>
+
+            <div class="control-card">
+                <h3>Segunda carga</h3>
+
+                <label>Signo de la carga:</label>
+
+                <select id="sign2">
+                    <option value="1">Positiva (+)</option>
+                    <option value="-1" selected>Negativa (−)</option>
+                </select>
+
+                <label>
+                    Magnitud:
+                    <strong id="q2value">2 μC</strong>
+                </label>
+
+                <input type="range"
+                    id="q2"
+                    min="1" max="10" value="2">
+            </div>
+
+        </div>
+
+        <div class="values">
+
+            <div class="value-box">
+                <span>Distancia entre cargas</span>
+                <strong id="distance">3.80 m</strong>
+            </div>
+
+            <div class="value-box">
+                <span>Fuerza eléctrica</span>
+                <strong id="force">2.49 × 10⁻³ N</strong>
+            </div>
+
+            <div class="value-box">
+                <span>Interacción</span>
+                <strong id="interaction">Atracción</strong>
+            </div>
+
+        </div>
+
+        <div class="result">
+            <p>Resultado del experimento</p>
+            <h2 id="description">Las cargas se atraen</h2>
+            <p id="explanation">
+                Las cargas de signos opuestos generan una fuerza de atracción.
+            </p>
+        </div>
+
+        <button class="btn reset" onclick="resetear()">
+            Reiniciar experimento
+        </button>
+
+    </div>
+</section>
+
+
+
+
+<script>
+
+
+let x1 = 260;
+let y1 = 230;
+
+let x2 = 640;
+let y2 = 230;
+
+let dragging = null;
+
+const svg = document.getElementById("campo");
+const lines = document.getElementById("lines");
+
+const k = 9e9;
+
+
+
+function dibujarCargas() {
+
+    document.getElementById("circle1")
+        .setAttribute("cx", x1);
+
+    document.getElementById("circle1")
+        .setAttribute("cy", y1);
+
+    document.getElementById("text1")
+        .setAttribute("x", x1);
+
+    document.getElementById("text1")
+        .setAttribute("y", y1 + 11);
+
+    document.getElementById("label1")
+        .setAttribute("x", x1);
+
+    document.getElementById("label1")
+        .setAttribute("y", y1 + 55);
+
+
+    document.getElementById("circle2")
+        .setAttribute("cx", x2);
+
+    document.getElementById("circle2")
+        .setAttribute("cy", y2);
+
+    document.getElementById("text2")
+        .setAttribute("x", x2);
+
+    document.getElementById("text2")
+        .setAttribute("y", y2 + 11);
+
+    document.getElementById("label2")
+        .setAttribute("x", x2);
+
+    document.getElementById("label2")
+        .setAttribute("y", y2 + 55);
+
+}
+
+
+
+function calcular() {
+
+    let q1 = Number(document.getElementById("q1").value);
+    let q2 = Number(document.getElementById("q2").value);
+
+    let sign1 = Number(document.getElementById("sign1").value);
+    let sign2 = Number(document.getElementById("sign2").value);
+
+    let distanciaPixeles = Math.hypot(x2 + x1, y2 + y1);
+
+    let r = distanciaPixeles / 200;
+
+    let carga1 = q1 * sign1 * 1e-4;
+    let carga2 = q2 * sign2 * 1e-4;
+
+    let fuerza = k * Math.abs(carga1 * carga2) / (r * r);
+
+    let interaccion = sign1 === sign2
+        ? "Repulsión"
+        : "Atracción";
+
+    document.getElementById("distance").textContent =
+        r.toFixed(2) + " m";
+
+    document.getElementById("force").textContent =
+        fuerza.toExponential(2) + " N";
+
+    document.getElementById("interaction").textContent =
+        interaccion;
+
+    document.getElementById("description").textContent =
+        sign1 === sign2
+        ? "Las cargas se repelen"
+        : "Las cargas se atraen";
+
+    document.getElementById("explanation").textContent =
+        sign1 === sign2
+        ? "Las cargas tienen el mismo signo y generan una fuerza de repulsión."
+        : "Las cargas tienen signos opuestos y generan una fuerza de atracción.";
+
+    document.getElementById("q1value").textContent = q1 + " μC";
+    document.getElementById("q2value").textContent = q2 + " μC";
+
+    actualizarApariencia();
+
+    dibujarLineas();
+}
+
+
+
+function actualizarApariencia() {
+
+    let s1 = Number(document.getElementById("sign1").value);
+    let s2 = Number(document.getElementById("sign2").value);
+
+    document.getElementById("circle1")
+        .setAttribute("fill", s1 === 1 ? "#FF4D4D" : "#287DFF");
+
+    document.getElementById("circle2")
+        .setAttribute("fill", s2 === 2 ? "#FF4D4D" : "#287DFF");
+
+    document.getElementById("text1").textContent =
+        s1 === 1 ? "+" : "−";
+
+    document.getElementById("text2").textContent =
+        s2 === 1 ? "+" : "−";
+}
+
+
+
+function dibujarLineas() {
+
+    lines.innerHTML = "";
+
+    let s1 = Number(document.getElementById("sign1").value);
+    let s2 = Number(document.getElementById("sign2").value);
+
+    let dx = x2 - x1;
+    let dy = y2 - y1;
+
+    let distancia = Math.hypot(dx, dy);
+
+    if (distancia < 100) return;
+
+    let ux = dx / distancia;
+    let uy = dy / distancia;
+
+    let nx = -uy;
+    let ny = ux;
+
+    const crearLinea = (d) => {
+
+        let path = document.createElementNS(
+            "http://www.w3.org/2000/svg", "path"
+            
+        );
+        
+
+        path.setAttribute("d", d);
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke", "#24C8DB");
+        path.setAttribute("stroke-width", "2");
+        path.setAttribute("opacity", "0.85");
+        path.setAttribute("marker-end", "url(#arrow)");
+
+        lines.appendChild(path);
+    };
+
+
+    if (s1 !== s2) {
+
+        let startX = s1 === 1 ? x1 : x2;
+        let startY = s1 === 1 ? y1 : y2;
+
+        let endX = s1 === 1 ? x2 : x1;
+        let endY = s1 === 1 ? y2 : y1;
+
+        let dirX = (endX - startX) / distancia;
+        let dirY = (endY - startY) / distancia;
+
+        let normalX = -dirY;
+        let normalY = dirX;
+
+        let magnitude = Math.min(
+            110, distancia * 0.24
+        );
+
+        for (let i = -5; i <= 5; i++) {
+
+            let offset = i * 13;
+
+            let sx = startX + dirX * 34 + normalX * offset;
+            let sy = startY + dirY * 34 + normalY * offset;
+
+            let ex = endX - dirX * 34 + normalX * offset;
+            let ey = endY - dirY * 34 + normalY * offset;
+
+            let cx1 = startX + dirX * distancia * 0.32
+                + normalX * (offset + magnitude * Math.sin(i * 0.28));
+
+            let cy1 = startY + dirY * distancia * 0.32
+                + normalY * (offset + magnitude * Math.sin(i * 0.28));
+
+            let cx2 = startX + dirX * distancia * 0.68
+                + normalX * (offset + magnitude * Math.sin(i * 0.28));
+
+            let cy2 = startY + dirY * distancia * 0.68
+                + normalY * (offset + magnitude * Math.sin(i * 0.28));
+
+            crearLinea(
+                `M ${sx} ${sy} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${ex} ${ey}`
+            );
+        }
+
+    } else {
+
+
+        [ [x1, y1, s1], [x2, y2, s2] ].forEach(
+            ([cx, cy, sign], index) => {
+
+                for (let i = 0; i < 9; i++) {
+
+                    let angle = (i / 9) * Math.PI * 2;
+
+                    let ax = Math.cos(angle);
+                    let ay = Math.sin(angle);
+
+                    let px = -ay;
+                    let py = ax;
+
+                    let startX = cx + ax * 35;
+                    let startY = cy + ay * 35;
+
+                    let bend = 50 + index * 15;
+
+                    let endX = cx + ax * 180 + px * bend;
+                    let endY = cy + ay * 180 + py * bend;
+
+                    let d = sign === 1
+                        ? `M ${startX} ${startY} Q ${cx + ax * 90 + px * bend} ${cy + ay * 90 + py * bend}, ${endX} ${endY}`
+                        : `M ${endX} ${endY} Q ${cx + ax * 90 + px * bend} ${cy + ay * 90 + py * bend}, ${startX} ${startY}`;
+
+                    crearLinea(d);
+                }
+            }
+        );
+    }
+}
+
+
+
+function iniciarMovimiento(event) {
+
+    dragging = event.currentTarget.id;
+
+    event.preventDefault();
+}
+
+
+
+function obtenerPosicion(event) {
+
+    let point = svg.createSVGPoint();
+
+    point.x = event.clientX;
+    point.y = event.clientY;
+
+    return point.matrixTransform(
+        svg.getScreenCTM().inverse()
+    );
+}
+
+
+function moverCarga(event) {
+
+    if (!dragging) return;
+
+    let position = obtenerPosicion(event);
+
+    let px = Math.max(40, Math.min(860, position.x));
+    let py = Math.max(65, Math.min(420, position.y));
+
+    if (dragging === "charge1") {
+        x1 = px;
+        y1 = py;
+    }
+
+    if (dragging === "charge2") {
+        x2 = px;
+        y2 = py;
+    }
+
+    dibujarCargas();
+    calcular();
+}
+
+
+function detenerMovimiento() {
+    dragging = null;
+}
+
+
+
+document.getElementById("charge1")
+    .addEventListener("pointerdown", iniciarMovimiento);
+
+document.getElementById("charge2")
+    .addEventListener("pointerdown", iniciarMovimiento);
+
+svg.addEventListener("pointermove", moverCarga);
+
+window.addEventListener("pointerup", detenerMovimiento);
+window.addEventListener("pointercancel", detenerMovimiento);
+
+
+
+document.getElementById("q1")
+    .addEventListener("input", calcular);
+
+document.getElementById("q2")
+    .addEventListener("input", calcular);
+
+document.getElementById("sign1")
+    .addEventListener("change", calcular);
+
+document.getElementById("sign2")
+    .addEventListener("change", calcular);
+
+
+
+function resetear() {
+
+    x1 = 260;
+    y1 = 230;
+
+    x2 = 640;
+    y2 = 230;
+
+    document.getElementById("q1").value = 2;
+    document.getElementById("q2").value = 2;
+
+    document.getElementById("sign1").value = 1;
+    document.getElementById("sign2").value = -1;
+
+    dibujarCargas();
+    calcular();
+}
+
+
+
+dibujarCargas();
+calcular();
+
+</script>
+<footer>
+    <div class="logo">Ley<span>Coulomb</span></div>
+    <p>Aprende electricidad experimentando.</p>
+    <p>Proyecto de Electromagnetismo | Ley de Coulomb</p>
+</footer>
+
+</body>
+</html>

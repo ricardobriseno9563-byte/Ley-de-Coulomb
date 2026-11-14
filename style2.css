@@ -1,0 +1,118 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #0B1424;
+    color: #F1F5F9;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 8%;
+    background: #101D30;
+    border-bottom: 1px solid #263A50;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.logo {
+    font-size: 27px;
+    font-weight: bold;
+    color: white;
+}
+
+.logo span {
+    color: #24C8DB;
+}
+
+nav {
+    display: flex;
+    gap: 22px;
+}
+
+nav a {
+    color: #CBD5E1;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+nav a:hover {
+    color: #24C8DB;
+}
+
+.hero {
+    min-height: 440px;
+    padding: 90px 10%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    background: linear-gradient(120deg, #10233B, #0B1424);
+    
+}
+
+.hero-content {
+    max-width: 600px;
+}
+
+.etiqueta {
+    color: #24C8DB;
+    font-size: 13px;
+    letter-spacing: 3px;
+    margin-bottom: 5px;
+}
+p{
+    font-size: 20px;
+    letter-spacing: 3px;
+    margin-bottom: 5px;
+}
+.etique p{
+color: #24C8DB;
+font-size: 30px;
+
+}
+
+
+.hero h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.hero h1 span {
+    color: #24C8DB;
+}
+
+.hero-content > p:not(.etiqueta) {
+    color: #AAB9CB;
+    line-height: 1.7;
+    margin-bottom: 30px;
+}
+
+.hero-icon {
+    text-align: center;
+    padding: 35px;
+    border: 1px solid #24C8DB;
+    border-radius: 25px;
+    background: #142A43;
+    box-shadow: 0 0 35px #24c8db22;
+}
+footer {
+    background: #101D30;
+    text-align: center;
+    padding: 35px;
+    color: #94A3B8;
+    line-height: 2;
+}
+
+footer .logo {
+    margin-bottom: 10px;
+}
